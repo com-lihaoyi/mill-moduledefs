@@ -16,6 +16,9 @@ In this project, you'll find the compiler plugin and some shared code.
 
 == Usage
 
+Artifacts of this project are released to Maven Central.
+
+.Mill
 [source,scala,subs="attributes,verbatim"]
 ----
 def ivyDeps = Agg(
@@ -26,6 +29,8 @@ def scalacPluginIvyDeps = Agg(
   ivy"com.lihaoyi:::scalac-mill-moduledefs-plugin:{version}"
 )
 ----
+
+// TODO: sbt setup
 
 == Project Layout
 
@@ -87,17 +92,6 @@ moduledefs.plugin[2.13.10].publishArtifacts
 
 . If appropriate, update the Readme/Changelog in the `main` branch.
 
-== Download
-
-Artifacts of this project are released to Maven Central.
-
-[source,scala,subs="verbatim,attributes"]
-----
-// The shared library
-ivy"com-lihaoyi::mill-moduledefs:{version}"
-// The compiler plugin
-ivy"com-lihaoyi:::scalac-mill-moduledefs-plugin:{version}"
-----
 
 == License
 
