@@ -14,6 +14,19 @@ Mill targets are also modelled as free applicatives, which among other things ma
 
 In this project, you'll find the compiler plugin and some shared code.
 
+== Usage
+
+[source,scala,subs="attributes,verbatim"]
+----
+def ivyDeps = Agg(
+  ivy"com.lihaoyi::mill-moduledefs:{version}"
+)
+// Enable the plugin in the Scala compiler
+def scalacPluginIvyDeps = Agg(
+  ivy"com.lihaoyi:::scalac-mill-moduledefs-plugin:{version}"
+)
+----
+
 == Project Layout
 
 This project contains two modules:
