@@ -4,8 +4,9 @@ import mill.scalalib._
 import mill.scalalib.publish._
 import mill.main.RunScript
 import mill.eval.Evaluator
-import mill.define.{SelectMode, Command}
-
+import mill.define.Command
+import mill.resolve.SelectMode
+import mill.resolve.Resolve
 object Settings {
   val version = "0.10.10"
   val pomOrg = "com.lihaoyi"
@@ -46,9 +47,8 @@ trait ModuledefsBase extends ScalaModule with PublishModule {
   }
 }
 
-object moduledefs extends Cross[ModuleDefsCross](Deps.scalaAllVersions.keys.toSeq: _*)
-class ModuleDefsCross(override val crossScalaVersion: String) extends CrossScalaModule
-    with ModuledefsBase { outer =>
+object moduledefs extends Cross[ModuleDefsCross](Deps.scalaAllVersions.keys.toSeq)
+trait ModuleDefsCross extends CrossScalaModule  with ModuledefsBase { outer =>
   override def artifactName = "mill-" + super.artifactName()
   override def ivyDeps = {
     val sv = crossScalaVersion
@@ -56,8 +56,8 @@ class ModuleDefsCross(override val crossScalaVersion: String) extends CrossScala
       (if (sv.startsWith("2.")) Agg(Deps.scalaCompiler(sv)) else Agg.empty)
   }
 
-  object plugin extends Cross[PluginCross](Deps.scalaAllVersions(crossScalaVersion): _*)
-  class PluginCross(override val crossScalaVersion: String) extends CrossScalaModule
+  object plugin extends Cross[PluginCross](Deps.scalaAllVersions(crossScalaVersion))
+  trait PluginCross extends CrossScalaModule
       with ModuledefsBase {
     override def artifactName = "scalac-mill-moduledefs-plugin"
                                           // ^^ TODO: cant use `"scalac-mill-" + super.artifactName()` here
@@ -95,11 +95,10 @@ def publishToSonatype(
       tasks
   }
 
-  val Right(tasks) = RunScript.resolveTasks(
-    mill.main.ResolveTasks,
-    Evaluator.currentEvaluator.get,
+  val Right(tasks) = Resolve.Tasks.resolve(
+    build,
     pubTasks,
-    SelectMode.Single
+    SelectMode.Separated
   )
 
   T.command {
