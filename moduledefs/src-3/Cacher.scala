@@ -51,7 +51,7 @@ object Cacher {
       val thisSel = This(owner.owner).asExprOf[Cacher]
       '{ $thisSel.cachedTarget[T](${ t })(using $enclosingCtx) }
     } else report.errorAndAbort(
-      "T{} members must be defs defined in a Cacher class/trait/object body",
+      "Task{} members must be defs defined in a Cacher class/trait/object body",
       Position.ofMacroExpansion
     )
   }
