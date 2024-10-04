@@ -8,7 +8,7 @@ import mill.define.Command
 import mill.resolve.SelectMode
 import mill.resolve.Resolve
 object Settings {
-  val version = "0.11.0-M2"
+  val version = "0.11.0"
   val pomOrg = "com.lihaoyi"
   val githubOrg = "com-lihaoyi"
   val githubRepo = "mill-moduledefs"
