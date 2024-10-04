@@ -99,6 +99,12 @@ This project is published under the https://mit-license.org/[MIT License].
 
 == Changelog
 
+=== 0.11.0 - 2024-10-04
+
+* Support for Scala 3
+* `T{}` in error message renamed to `Task{}`
+* Support `.mill` filesystem extension
+
 === 0.10.9 - 2022-11-10
 
 First stable release from this repository. No feature additions and removals since release `0.10.8` from the Mill repository.
