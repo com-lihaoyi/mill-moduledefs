@@ -49,7 +49,11 @@ class AutoOverridePluginDotty extends StandardPlugin {
         comment <- docCtx.docstring(sym)
       do {
         val text = NamedArg(valueName, Literal(Constant(comment.raw))).withSpan(span)
-        sym.addAnnotation(Annotation(ScalaDocAnnot, text, span))
+        val annot = Annotation(ScalaDocAnnot, text, span)
+        sym.addAnnotation(annot)
+        Option.when(sym.isTerm)(sym.moduleClass)
+          .filter(sym => sym.exists && !sym.hasAnnotation(ScalaDocAnnot))
+          .foreach(_.addAnnotation(annot))
       }
     }
 
