@@ -99,11 +99,14 @@ This project is published under the https://mit-license.org/[MIT License].
 
 == Changelog
 
-
+[#0-11-1]
 === 0.11.1 - 2024-10-11
 
 * Copy doc comment to module class in Scala 3
 
+* 2024-10-20: Published for Scala 2.13.15
+
+[#0-11-0]
 === 0.11.0 - 2024-10-04
 
 * Support for Scala 3
