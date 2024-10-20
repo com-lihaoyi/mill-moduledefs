@@ -8,7 +8,7 @@ import mill.define.Command
 import mill.resolve.SelectMode
 import mill.resolve.Resolve
 object Settings {
-  val version = "0.11.0-M1"
+  val version = "0.11.1"
   val pomOrg = "com.lihaoyi"
   val githubOrg = "com-lihaoyi"
   val githubRepo = "mill-moduledefs"
@@ -16,7 +16,7 @@ object Settings {
 }
 
 object Deps {
-  val scala2Versions = 0.to(14).map(v => "2.13." + v)
+  val scala2Versions = 0.to(15).map(v => "2.13." + v)
   val scala3Versions = Seq("3.5.0")
   val scalaAllVersions = Map(scala2Versions.last -> scala2Versions, scala3Versions.last -> scala3Versions)
   def scalaCompiler(scalaVersion: String) =

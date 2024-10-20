@@ -37,7 +37,8 @@ class AutoOverridePlugin(val global: Global) extends Plugin {
       override def transformUnit(unit: CompilationUnit) = {
         if (
           unit.source.file.name.endsWith(".scala") ||
-          unit.source.file.name.endsWith(".sc")
+          unit.source.file.name.endsWith(".sc") ||
+          unit.source.file.name.endsWith(".mill")
         ) {
           comments.parseComments(unit)
           super.transformUnit(unit)

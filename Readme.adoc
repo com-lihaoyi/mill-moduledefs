@@ -1,7 +1,7 @@
 = mill-moduledefs
 :toc-placement: preamble
 :toc:
-:version: 0.10.9
+:version: 0.11.1
 
 A Scalac compiler plugin to support Mill modules.
 
@@ -98,6 +98,17 @@ moduledefs.plugin[2.13.10].publishArtifacts
 This project is published under the https://mit-license.org/[MIT License].
 
 == Changelog
+
+
+=== 0.11.1 - 2024-10-11
+
+* Copy doc comment to module class in Scala 3
+
+=== 0.11.0 - 2024-10-04
+
+* Support for Scala 3
+* `T{}` in error message renamed to `Task{}`
+* Support `.mill` filesystem extension
 
 [#0-11-0-M1]
 === 0.11.0-M1 - 2024-08-22
