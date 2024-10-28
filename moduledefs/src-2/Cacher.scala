@@ -26,7 +26,7 @@ object Cacher {
     if (ownerIsCacherClass && owner.isMethod) q"this.cachedTarget[${weakTypeTag[R]}]($t)"
     else c.abort(
       c.enclosingPosition,
-      "Task{} members must be defs defined in a Cacher class/trait/object body"
+      "Task{} members must be defs defined in a Module class/trait/object body"
     )
   }
 }
