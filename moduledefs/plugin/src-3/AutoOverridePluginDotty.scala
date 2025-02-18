@@ -13,7 +13,7 @@ import dotty.tools.dotc.core.Flags
 import dotty.tools.dotc.report
 import dotty.tools.dotc.core.Constants.Constant
 import dotty.tools.dotc.core.Annotations.Annotation
-import dotty.tools.dotc.ast.tpd.{Template, ValDef, DefDef, Literal, NamedArg}
+import dotty.tools.dotc.ast.tpd.{Template, ValDef, DefDef, TypeDef, Literal, NamedArg}
 import dotty.tools.dotc.util.Spans.Span
 
 class AutoOverridePluginDotty extends StandardPlugin {
@@ -50,7 +50,7 @@ class AutoOverridePluginDotty extends StandardPlugin {
       do {
         val text = NamedArg(valueName, Literal(Constant(comment.raw))).withSpan(span)
         val annot = Annotation(ScalaDocAnnot, text, span)
-        sym.addAnnotation(annot)
+        if (!sym.hasAnnotation(ScalaDocAnnot)) sym.addAnnotation(annot)
         Option.when(sym.isTerm)(sym.moduleClass)
           .filter(sym => sym.exists && !sym.hasAnnotation(ScalaDocAnnot))
           .foreach(_.addAnnotation(annot))
@@ -68,6 +68,11 @@ class AutoOverridePluginDotty extends StandardPlugin {
     }
 
     override def prepareForDefDef(tree: DefDef)(using Context): Context = {
+      cookComment(tree.symbol, tree.span)
+      ctx
+    }
+
+    override def prepareForTypeDef(tree: TypeDef)(using Context): Context = {
       cookComment(tree.symbol, tree.span)
       ctx
     }
