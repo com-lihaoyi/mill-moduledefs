@@ -8,7 +8,7 @@ on:
 
 jobs:
   publish-sonatype:
-    if: github.repository == 'com-lihaoyi/os-lib'
+    if: github.repository == 'com-lihaoyi/mill-moduledefs'
     runs-on: ubuntu-latest
     env:
       MILL_SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
