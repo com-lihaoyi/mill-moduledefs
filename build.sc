@@ -119,7 +119,7 @@ def publishToSonatype(
         snapshotUri = "https://oss.sonatype.org/content/repositories/snapshots",
         sonatypeCreds,
         signed = true,
-        gpgArgs.split(','),
+        gpgArgs.split(',').toIndexedSeq,
         readTimeout = 6000000,
         connectTimeout = 600000,
         T.log,
