@@ -42,7 +42,7 @@ trait ModuledefsBase extends ScalaModule with PublishModule {
   override def javacOptions = Seq("-source", "1.8", "-target", "1.8", "-encoding", "UTF-8")
   override def scalacOptions = T {
     super.scalacOptions() ++ (
-      if (scalaVersion().startsWith("3.")) Seq("-Yexplicit-nulls", "-no-indent")
+      if (scalaVersion().startsWith("3.")) Seq("-Yexplicit-nulls", "-no-indent", "-java-output-version", "8")
       else Seq.empty
     )
   }
