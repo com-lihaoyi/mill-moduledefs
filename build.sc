@@ -8,7 +8,7 @@ import mill.define.Command
 import mill.resolve.SelectMode
 import mill.resolve.Resolve
 object Settings {
-  val version = "0.11.5"
+  val version = "0.11.6"
   val pomOrg = "com.lihaoyi"
   val githubOrg = "com-lihaoyi"
   val githubRepo = "mill-moduledefs"
@@ -21,7 +21,7 @@ object Deps {
   val scala36Versions = Seq("3.6.2", "3.6.3", "3.6.4")
   val scala37Versions = Seq("3.7.0", "3.7.1")
   val scalaAllVersions = Map(scala2Versions.last -> scala2Versions, scala3Versions.last -> scala3Versions, scala36Versions.last -> scala36Versions, scala37Versions.last -> scala37Versions)
-  def scalaCompiler(scalaVersion: String) =
+  def scalaCompiler(scalaVersion: String) =c
     if (scalaVersion.startsWith("3.")) ivy"org.scala-lang::scala3-compiler:${scalaVersion}"
     else ivy"org.scala-lang:scala-compiler:${scalaVersion}"
   val sourcecode = ivy"com.lihaoyi::sourcecode:0.3.0"
