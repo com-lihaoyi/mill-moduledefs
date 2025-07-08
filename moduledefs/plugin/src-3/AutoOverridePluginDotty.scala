@@ -18,8 +18,14 @@ import dotty.tools.dotc.util.Spans.Span
 
 class AutoOverridePluginDotty extends StandardPlugin {
 
-  override def initialize(options: List[String])(using Context): List[PluginPhase] =
-    List(EnableScaladocAnnotation(), AutoOverride())
+  override def initialize(options: List[String])(using Context): List[PluginPhase] = {
+    // Support disabling the scaladoc annotation globally. This is used for generating API
+    // docs, because otherwise the scaladoc annotation appears in the generated scaladoc and
+    // looks super ugly, but in Scala 3 `-P` doesn't seem to be supported so there's no
+    // nice way to configure this locally to the docjar/unidoc tasks.
+    if (sys.env.contains("MILL_DISABLE_SCALADOC_ANNOTATION")) List(AutoOverride())
+    else List(EnableScaladocAnnotation(), AutoOverride())
+  }
 
   val name = "auto-override-plugin"
   val description = "automatically inserts `override` keywords for you"
