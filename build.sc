@@ -16,7 +16,7 @@ object Settings {
 }
 
 object Deps {
-  val scala2Versions = 0.to(15).map(v => "2.13." + v)
+  val scala2Versions = 0.to(16).map(v => "2.13." + v)
   val scala3Versions = Seq("3.5.0")
   val scalaAllVersions = Map(scala2Versions.last -> scala2Versions, scala3Versions.last -> scala3Versions)
   def scalaCompiler(scalaVersion: String) =
