@@ -19,7 +19,7 @@ object Deps {
   val scala2Versions = 0.to(15).map(v => "2.13." + v)
   val scala3Versions = Seq("3.5.0", "3.5.2")
   val scala36Versions = Seq("3.6.2", "3.6.3", "3.6.4")
-  val scala37Versions = Seq("3.7.0", "3.7.1")
+  val scala37Versions = Seq("3.7.0", "3.7.1", "3.7.2", "3.7.3")
   val scalaAllVersions = Map(scala2Versions.last -> scala2Versions, scala3Versions.last -> scala3Versions, scala36Versions.last -> scala36Versions, scala37Versions.last -> scala37Versions)
   def scalaCompiler(scalaVersion: String) =
     if (scalaVersion.startsWith("3.")) ivy"org.scala-lang::scala3-compiler:${scalaVersion}"
