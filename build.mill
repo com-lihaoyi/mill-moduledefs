@@ -23,7 +23,7 @@ object Deps {
     scala3Versions.last -> scala3Versions,
     scala36Versions.last -> scala36Versions,
     scala37Versions.last -> scala37Versions,
-//    scala38Versions.last -> scala38Versions
+    scala38Versions.last -> scala38Versions
   )
   def scalaCompiler(scalaVersion: String) =
     if (scalaVersion.startsWith("3.")) ivy"org.scala-lang::scala3-compiler:${scalaVersion}"
@@ -44,10 +44,11 @@ trait ModuledefsBase extends ScalaModule with PublishModule {
       Developer("lefou", "Tobias Roeser", "https://github.com/lefou")
     )
   )
+  def jvmId = Task{ if (scalaVersion().startsWith("3.8.")) "17" else "11" }
   override def javacOptions = Seq("-source", "1.8", "-target", "1.8", "-encoding", "UTF-8")
   override def scalacOptions = Task {
     super.scalacOptions() ++ (
-      if (scalaVersion().startsWith("3.")) Seq("-Yexplicit-nulls", "-no-indent", "-java-output-version", "8")
+      if (scalaVersion().startsWith("3.")) Seq("-Yexplicit-nulls", "-no-indent")
       else Seq.empty
     )
   }
