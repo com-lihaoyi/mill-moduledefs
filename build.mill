@@ -1,14 +1,11 @@
-// imports
-import mill._
+//| mill-version: 1.1.0-RC2
+//| mill-jvm-version: 11
 import mill.scalalib._
 import mill.scalalib.publish._
-import mill.main.RunScript
-import mill.eval.Evaluator
-import mill.define.Command
-import mill.resolve.SelectMode
-import mill.resolve.Resolve
+import mill.api.*
+import mill.*
 object Settings {
-  val version = "0.11.10"
+  val version = "0.12.1"
   val pomOrg = "com.lihaoyi"
   val githubOrg = "com-lihaoyi"
   val githubRepo = "mill-moduledefs"
@@ -20,7 +17,14 @@ object Deps {
   val scala3Versions = Seq("3.5.0", "3.5.2")
   val scala36Versions = Seq("3.6.2", "3.6.3", "3.6.4")
   val scala37Versions = Seq("3.7.0", "3.7.1", "3.7.2", "3.7.3")
-  val scalaAllVersions = Map(scala2Versions.last -> scala2Versions, scala3Versions.last -> scala3Versions, scala36Versions.last -> scala36Versions, scala37Versions.last -> scala37Versions)
+  val scala38Versions = Seq("3.8.0-RC1")
+  val scalaAllVersions = Map(
+    scala2Versions.last -> scala2Versions,
+    scala3Versions.last -> scala3Versions,
+    scala36Versions.last -> scala36Versions,
+    scala37Versions.last -> scala37Versions,
+//    scala38Versions.last -> scala38Versions
+  )
   def scalaCompiler(scalaVersion: String) =
     if (scalaVersion.startsWith("3.")) ivy"org.scala-lang::scala3-compiler:${scalaVersion}"
     else ivy"org.scala-lang:scala-compiler:${scalaVersion}"
@@ -41,7 +45,7 @@ trait ModuledefsBase extends ScalaModule with PublishModule {
     )
   )
   override def javacOptions = Seq("-source", "1.8", "-target", "1.8", "-encoding", "UTF-8")
-  override def scalacOptions = T {
+  override def scalacOptions = Task {
     super.scalacOptions() ++ (
       if (scalaVersion().startsWith("3.")) Seq("-Yexplicit-nulls", "-no-indent", "-java-output-version", "8")
       else Seq.empty
@@ -52,10 +56,10 @@ trait ModuledefsBase extends ScalaModule with PublishModule {
 object moduledefs extends Cross[ModuleDefsCross](Deps.scalaAllVersions.keys.toSeq)
 trait ModuleDefsCross extends CrossScalaModule  with ModuledefsBase { outer =>
   override def artifactName = "mill-" + super.artifactName()
-  override def ivyDeps = {
+  override def mvnDeps = {
     val sv = crossScalaVersion
-    Agg(Deps.sourcecode) ++
-      (if (sv.startsWith("2.")) Agg(Deps.scalaCompiler(sv)) else Agg.empty)
+    Seq(Deps.sourcecode) ++
+      (if (sv.startsWith("2.")) Seq(Deps.scalaCompiler(sv)) else Seq.empty)
   }
 
   object plugin extends Cross[PluginCross](Deps.scalaAllVersions(crossScalaVersion))
@@ -67,15 +71,16 @@ trait ModuleDefsCross extends CrossScalaModule  with ModuledefsBase { outer =>
                                           //    could be addressed with Cross2 from mill 0.11.x
     override def moduleDeps = Seq(moduledefs(outer.crossScalaVersion))
     override def crossFullScalaVersion = true
-    override def ivyDeps = Agg(
+    override def mvnDeps = Seq(
       Deps.scalaCompiler(crossScalaVersion),
       Deps.sourcecode
     )
 
-    override def resources = T.sources {
-      super.resources() ++ scalaVersionDirectoryNames.map(dir =>
-        PathRef(millSourcePath / s"resources-$dir")
-      )
+    def versionedResources = Task.Sources(
+      scalaVersionDirectoryNames.map(dir => moduleDir / s"resources-$dir")*
+    )
+    override def resources = Task {
+      super.resources() ++ versionedResources()
     }
   }
 }
@@ -84,7 +89,8 @@ def publishToSonatype(
     sonatypeCreds: String,
     gpgArgs: String = PublishModule.defaultGpgArgs.mkString(","),
     dryRun: Boolean = false,
-    artifactsFile: Option[String] = None
+    artifactsFile: Option[String] = None,
+    eval: Evaluator
 ): Command[Unit] = {
 
   val pubTasks: Seq[String] = artifactsFile.map(f => os.Path(f, os.pwd)).filter(os.exists) match {
@@ -97,21 +103,20 @@ def publishToSonatype(
       tasks
   }
 
-  val Right(tasks) = Resolve.Tasks.resolve(
-    build,
+  val Result.Success(tasks) = eval.resolveTasks(
     pubTasks,
     SelectMode.Separated
   )
 
-  T.command {
-    val pubArtifacts: Seq[(Seq[(os.Path, String)], Artifact)] = T.sequence(tasks)().map {
+  Task.Command {
+    val pubArtifacts: Seq[(Seq[(os.Path, String)], Artifact)] = Task.sequence(tasks)().map {
       case PublishModule.PublishData(a, s) => (s.map { case (p, f) => (p.path, f) }, a)
     }
 
-    T.log.debug(s"Publishing artifacts: ${pubArtifacts.map(_._2).mkString("\n  ", "\n  ", "")}")
+    Task.log.debug(s"Publishing artifacts: ${pubArtifacts.map(_._2).mkString("\n  ", "\n  ", "")}")
 
     if (dryRun) {
-      T.log.info(
+      Task.log.info(
         s"Skipping publish for artifacts: ${pubArtifacts.map(_._2).mkString("\n  ", "\n  ", "")}"
       )
     } else {
@@ -123,9 +128,9 @@ def publishToSonatype(
         gpgArgs.split(',').toIndexedSeq,
         readTimeout = 6000000,
         connectTimeout = 600000,
-        T.log,
-        T.workspace,
-        T.env,
+        Task.log,
+        BuildCtx.workspaceRoot,
+        Task.env,
         awaitTimeout = 600000,
         stagingRelease = true
       ).publishAll(
