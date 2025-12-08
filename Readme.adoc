@@ -51,7 +51,9 @@ Publishing is automated via GitHub Actions.
 
 IMPORTANT: **You need to update the version manually, before creatign the git tag!**
 
-All git tags are automatically published. The tag should reflect the version number.
+Don't forget to update the changelog as well!
+
+Once you pushed the tag, it will be automatically published. The tag should reflect the version number.
 
 === Re-publish for a new Scala Release
 :example-version: 0.12.4
