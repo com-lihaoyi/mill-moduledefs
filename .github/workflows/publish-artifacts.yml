@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       scala_version:
-        description: 'Single Scala version to publish the scalac-plugin for (SCALA_VERSION)'
+        description: 'Single Scala version to just publish the scalac-plugin for SCALA_VERSION'
         type: string
         default: ''
 
@@ -39,7 +39,7 @@ jobs:
         if: inputs.scala_version == ''
         run: ./mill -i mill.scalalib.SonatypeCentralPublishModule/
 
-      - name: Publish selected version to Maven Central
+      - name: Publish plugin for selected Scala version to Maven Central
         if: inputs.scala_version != ''
         run: ./mill -i mill.scalalib.SonatypeCentralPublishModule/ --publishArtifacts "plugin[${{ inputs.scala_version }}].publishArtifacts"
 
