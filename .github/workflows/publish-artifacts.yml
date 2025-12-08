@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       scala_version:
-        description: 'Single Scala version to add (SCALA_VERSION)'
+        description: 'Single Scala version to publish the scalac-plugin for (SCALA_VERSION)'
         type: string
         default: ''
 
@@ -41,7 +41,7 @@ jobs:
 
       - name: Publish selected version to Maven Central
         if: inputs.scala_version != ''
-        run: ./mill -i mill.scalalib.SonatypeCentralPublishModule/ --publishArtifacts "__.plugin[${{ inputs.scala_version }}].publishArtifacts"
+        run: ./mill -i mill.scalalib.SonatypeCentralPublishModule/ --publishArtifacts "plugin[${{ inputs.scala_version }}].publishArtifacts"
 
       - name: Create GitHub Release
         id: create_gh_release
