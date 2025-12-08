@@ -19,10 +19,40 @@ object Deps {
     scala2Versions.last -> scala2Versions,
     "3.7.4" -> scala3Versions,
   )
+  val scalaVersionEnv = sys.env.get("SCALA_VERSION")
+    .map(_.trim)
+    .filter(_.nonEmpty)
+    .tapEach(v => println(s"Adding environmental defined Scala version to version matrix. SCALA_VERSION=${v}"))
+    .toSeq
+
+  val allVersions = scala2Versions ++ scala3Versions ++ scalaVersionEnv
+  val scalaAllVersions = allVersions.distinct
+    // group by major.minor
+    .groupBy(_
+      .split("[.]", 3)
+      .take(2)
+      .mkString(".")
+    )
+    .view
+    // sort, oldest first
+    .mapValues(vs => vs
+      .map(v => mill.util.Version.parse(v))
+      .sorted(mill.util.Version.MavenOrdering)
+      .map(_.toString())
+    )
+    .toMap
+    // put the newest version per group
+    .map(v => (v._2.last, v._2))
+
   def scalaCompiler(scalaVersion: String) =
     if (scalaVersion.startsWith("3.")) ivy"org.scala-lang::scala3-compiler:${scalaVersion}"
     else ivy"org.scala-lang:scala-compiler:${scalaVersion}"
   val sourcecode = ivy"com.lihaoyi::sourcecode:0.3.0"
+}
+
+def dump() = Task.Command {
+  pprint.log(Deps.allVersions)
+  pprint.log(Deps.scalaAllVersions)
 }
 
 trait ModuledefsBase extends ScalaModule with PublishModule {
