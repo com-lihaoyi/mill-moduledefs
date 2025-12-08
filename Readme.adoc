@@ -38,7 +38,7 @@ This project contains two modules:
 
 * `moduledefs` - Some shared code to be used in the Mill classpath. The `artifactName` is `mill-moduledefs`. This is cross-build to support Scala 2.13 and Scala 3
 
-* `plugin` - A Scalac compiler plugin to be used when compiling Mill projects. The `artifactName` is `scalac-mill-moduledefs-plugin`. This is crossbuild for all supported Scala compiler versions. If there is an older version missing, it is probably not supported. If a newer version is missing, please open an issue and/or pull request. If technically possible, we can also back-publish a recently published version for a new Scala release.
+* `plugin` - A Scalac compiler plugin to be used when compiling Mill projects. The `artifactName` is `scalac-mill-moduledefs-plugin`. This is crossbuild for all supported Scala compiler versions. If there is an older version missing, it is probably not supported. If a newer version is missing, please open an issue and/or pull request. If technically possible, we can also back-publish a recent version for a new Scala release.
 
 == Development and Releases
 
