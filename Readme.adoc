@@ -37,7 +37,7 @@ def scalacPluginIvyDeps = Agg(
 This project contains two modules:
 
 * `moduledefs` - Some shared code to be used in the Mill classpath. The `artifactName` is `mill-moduledefs`.
-* `moduledefs/plugin` - A Scalac compiler plugin to be used when compiling Mill projects. The `artifactName` is `scalac-mill-moduledefs-plugin`.
+* `plugin` - A Scalac compiler plugin to be used when compiling Mill projects. The `artifactName` is `scalac-mill-moduledefs-plugin`.
 
 == Development and Releases
 
@@ -47,50 +47,34 @@ It should be especially kept stable within the same Mill major version.
 
 === Publishing
 
-Publishing is automated via GitHub Actions and implemented in the `publishToSonatype` command.
+Publishing is automated via GitHub Actions.
 
-[source,scala]
-----
-def publishToSonatype(
-    sonatypeCreds: String,
-    gpgArgs: String = PublishModule.defaultGpgArgs.mkString(","),
-    dryRun: Boolean = false,
-    artifactsFile: Option[String] = None
-): Command[Unit]
-----
-
-**You need to update the version manually, before creatign the git tag!**
+IMPORTANT: **You need to update the version manually, before creatign the git tag!**
 
 All git tags are automatically published. The tag should reflect the version number.
 
-
 === Re-publish for a new Scala Release
-:example-version: 0.10.9
-:example-scala-version: 2.13.10
+:example-version: 0.12.4
+:example-scala-version: 3.8.0
 
 The most frequently expected changes are releases for newer Scala version.
 This is especially needed, as compiler plugins are tied to the exact Scala compiler version.
 
 Hence, this build aims to be flexible enough, to release an already tagged version for newer Scalac releases after the fact.
 
-As an example, to release an already published version `{example-version}` for a new Scala version `{example-scala-version}`, follow these steps:
+As an example, we want to release an already published version `{example-version}` for a new Scala version `{example-scala-version}`:
 
-. Create a branch `release-{example-version}` from the git tag `{example-version}`.
+To do that:
 
-. Add the new Scala version to the build setup. Make sure you don't change the actual code, so it stays compatible to the original tag.
+1. Select the `publish-artifacts.yml` workflow
 
-. Add a file `PUBLISH_ONLY` containing a selector for the artifacts to publish. If you need more than one selector, place each on a new line.
-+
-.Example file `PUBLISH_ONLY`
-----
-moduledefs.plugin[2.13.10].publishArtifacts
-----
+2. Find the "Run workflow" drop down (upper right corner)
 
-. Commit your changes.
+3. In the Branch-selector select the `Tags` tab and chosse the correct tag `{example-version}` (must be >= 0.12.4)
 
-. Tag your commit with `{example-version}-for-{example-scala-version}`. This will trigger the `publish-sonatype` workflow in GHA.
+4. Press "Run workflow" to start the process
 
-. If appropriate, update the Readme/Changelog in the `main` branch.
+IMPORTANT: Remember to also open a pull request against the `main` branch, to make the support for the new Scala version permanent.
 
 
 == License
