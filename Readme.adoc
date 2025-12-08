@@ -57,7 +57,7 @@ Don't forget to update the changelog as well!
 Once you pushed the tag, it will be automatically published. The tag should reflect the version number.
 
 === Re-publish for a new Scala Release
-:example-version: 0.12.4
+:example-version: 0.12.5
 :example-scala-version: 3.8.0
 
 The most frequently expected changes are releases for newer Scala version.
@@ -73,7 +73,7 @@ To do that:
 
 2. Find the "Run workflow" drop down (upper right corner)
 
-3. In the Branch-selector select the `Tags` tab and chosse the correct tag `{example-version}` (must be >= 0.12.4)
+3. In the Branch-selector select the `Tags` tab and chosse the correct tag `{example-version}` (must be >= 0.12.5)
 
 4. Press "Run workflow" to start the process
 
