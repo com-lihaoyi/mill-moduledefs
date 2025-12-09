@@ -1,7 +1,7 @@
 = mill-moduledefs
 :toc-placement: preamble
 :toc:
-:version: 0.11.3-M5
+:version: 0.12.5-RC1
 
 A Scalac compiler plugin to support Mill modules.
 
@@ -18,15 +18,15 @@ In this project, you'll find the compiler plugin and some shared code.
 
 Artifacts of this project are released to Maven Central.
 
-.Mill
+.Mill (1.x)
 [source,scala,subs="attributes,verbatim"]
 ----
-def ivyDeps = Agg(
-  ivy"com.lihaoyi::mill-moduledefs:{version}"
+def mvnDeps = Agg(
+  mvn"com.lihaoyi::mill-moduledefs:{version}"
 )
 // Enable the plugin in the Scala compiler
 def scalacPluginIvyDeps = Agg(
-  ivy"com.lihaoyi:::scalac-mill-moduledefs-plugin:{version}"
+  mvn"com.lihaoyi:::scalac-mill-moduledefs-plugin:{version}"
 )
 ----
 
@@ -85,6 +85,14 @@ IMPORTANT: Remember to also open a pull request against the `main` branch, to ma
 This project is published under the https://mit-license.org/[MIT License].
 
 == Changelog
+
+[#0-12-5-RC1]
+=== 0.12.5-RC1
+
+_Changes since 0.12.4:_
+
+* Support for Scala 2.13.16, 2.13.17, 2.13.18
+* Enabled back-publish support in the GitHub Actions based publisher
 
 [#0-11-3-M5]
 === 0.11.3-M5
