@@ -5,6 +5,11 @@ on:
     tags:
       - '**'
   workflow_dispatch:
+    inputs:
+      scala_version:
+        description: 'Single Scala version to just publish the scalac-plugin for SCALA_VERSION'
+        type: string
+        default: ''
 
 jobs:
   publish-sonatype:
@@ -18,6 +23,7 @@ jobs:
       LANG: "en_US.UTF-8"
       LC_MESSAGES: "en_US.UTF-8"
       LC_ALL: "en_US.UTF-8"
+      SCALA_VERSION: ${{ inputs.scala_version }}
 
     steps:
       - uses: actions/checkout@v3
@@ -25,8 +31,17 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 11
-      - name: Publish to Maven Central
+
+      - name: Pre-publish testing
+        run: ./mill --no-server "__.publishM2Local" --m2RepoPath test-repo
+
+      - name: Publish all to Maven Central
+        if: inputs.scala_version == ''
         run: ./mill -i mill.scalalib.SonatypeCentralPublishModule/
+
+      - name: Publish plugin for selected Scala version to Maven Central
+        if: inputs.scala_version != ''
+        run: ./mill -i mill.scalalib.SonatypeCentralPublishModule/ --publishArtifacts "plugin[${{ inputs.scala_version }}].publishArtifacts"
 
       - name: Create GitHub Release
         id: create_gh_release

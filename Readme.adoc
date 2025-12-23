@@ -1,7 +1,7 @@
 = mill-moduledefs
 :toc-placement: preamble
 :toc:
-:version: 0.11.3-M5
+:version: 0.12.5-RC1
 
 A Scalac compiler plugin to support Mill modules.
 
@@ -18,15 +18,15 @@ In this project, you'll find the compiler plugin and some shared code.
 
 Artifacts of this project are released to Maven Central.
 
-.Mill
+.Mill (1.x)
 [source,scala,subs="attributes,verbatim"]
 ----
-def ivyDeps = Agg(
-  ivy"com.lihaoyi::mill-moduledefs:{version}"
+def mvnDeps = Agg(
+  mvn"com.lihaoyi::mill-moduledefs:{version}"
 )
 // Enable the plugin in the Scala compiler
 def scalacPluginIvyDeps = Agg(
-  ivy"com.lihaoyi:::scalac-mill-moduledefs-plugin:{version}"
+  mvn"com.lihaoyi:::scalac-mill-moduledefs-plugin:{version}"
 )
 ----
 
@@ -36,8 +36,9 @@ def scalacPluginIvyDeps = Agg(
 
 This project contains two modules:
 
-* `moduledefs` - Some shared code to be used in the Mill classpath. The `artifactName` is `mill-moduledefs`.
-* `moduledefs/plugin` - A Scalac compiler plugin to be used when compiling Mill projects. The `artifactName` is `scalac-mill-moduledefs-plugin`.
+* `moduledefs` - Some shared code to be used in the Mill classpath. The `artifactName` is `mill-moduledefs`. This is cross-build to support Scala 2.13 and Scala 3
+
+* `plugin` - A Scalac compiler plugin to be used when compiling Mill projects. The `artifactName` is `scalac-mill-moduledefs-plugin`. This is crossbuild for all supported Scala compiler versions. If there is an older version missing, it is probably not supported. If a newer version is missing, please open an issue and/or pull request. If technically possible, we can also back-publish a recent version for a new Scala release.
 
 == Development and Releases
 
@@ -47,50 +48,36 @@ It should be especially kept stable within the same Mill major version.
 
 === Publishing
 
-Publishing is automated via GitHub Actions and implemented in the `publishToSonatype` command.
+Publishing is automated via GitHub Actions.
 
-[source,scala]
-----
-def publishToSonatype(
-    sonatypeCreds: String,
-    gpgArgs: String = PublishModule.defaultGpgArgs.mkString(","),
-    dryRun: Boolean = false,
-    artifactsFile: Option[String] = None
-): Command[Unit]
-----
+IMPORTANT: **You need to update the version manually, before creatign the git tag!**
 
-**You need to update the version manually, before creatign the git tag!**
+Don't forget to update the changelog as well!
 
-All git tags are automatically published. The tag should reflect the version number.
-
+Once you pushed the tag, it will be automatically published. The tag should reflect the version number.
 
 === Re-publish for a new Scala Release
-:example-version: 0.10.9
-:example-scala-version: 2.13.10
+:example-version: 0.12.5
+:example-scala-version: 3.8.0
 
 The most frequently expected changes are releases for newer Scala version.
 This is especially needed, as compiler plugins are tied to the exact Scala compiler version.
 
 Hence, this build aims to be flexible enough, to release an already tagged version for newer Scalac releases after the fact.
 
-As an example, to release an already published version `{example-version}` for a new Scala version `{example-scala-version}`, follow these steps:
+As an example, we want to release an already published version `{example-version}` for a new Scala version `{example-scala-version}`:
 
-. Create a branch `release-{example-version}` from the git tag `{example-version}`.
+To do that:
 
-. Add the new Scala version to the build setup. Make sure you don't change the actual code, so it stays compatible to the original tag.
+1. Select the `publish-artifacts.yml` workflow
 
-. Add a file `PUBLISH_ONLY` containing a selector for the artifacts to publish. If you need more than one selector, place each on a new line.
-+
-.Example file `PUBLISH_ONLY`
-----
-moduledefs.plugin[2.13.10].publishArtifacts
-----
+2. Find the "Run workflow" drop down (upper right corner)
 
-. Commit your changes.
+3. In the Branch-selector select the `Tags` tab and chosse the correct tag `{example-version}` (must be >= 0.12.5)
 
-. Tag your commit with `{example-version}-for-{example-scala-version}`. This will trigger the `publish-sonatype` workflow in GHA.
+4. Press "Run workflow" to start the process
 
-. If appropriate, update the Readme/Changelog in the `main` branch.
+IMPORTANT: Remember to also open a pull request against the `main` branch, to make the support for the new Scala version permanent.
 
 
 == License
@@ -98,6 +85,61 @@ moduledefs.plugin[2.13.10].publishArtifacts
 This project is published under the https://mit-license.org/[MIT License].
 
 == Changelog
+
+[#0-12-5-RC1]
+=== 0.12.5-RC1
+
+* Add support for Scala 2.13.16, 2.13.17, 2.13.18
+* Enabled back-publish support in the GitHub Actions based publisher
+
+=== 0.12.4
+
+* Support for Scala 3.8.0-RC3
+
+=== 0.12.3
+
+* Support for Scala 3.8.0-RC2
+
+=== 0.12.2
+
+* Add support for Scala 3.7.4
+* Dropped support for Scala 3.5.x, 3.6.x
+
+=== 0.12.1
+
+* Add support for Scala 3.8.0-RC1
+
+=== 0.12.0
+
+* Add support for Scala 3.7.2, 3.7.3
+
+=== 0.11.10
+
+* internal changes
+
+=== 0.11.9
+
+* internal changes
+
+=== 0.11.8
+
+* internal changes
+
+=== 0.11.7
+
+* fix build script
+
+=== 0.11.6
+
+* Update Sonatype publishing
+
+=== 0.11.5
+
+* Add support for Scala 3.7.1
+
+=== 0.11.4
+
+* Add support for Scala 3.7.0
 
 [#0-11-3-M5]
 === 0.11.3-M5
