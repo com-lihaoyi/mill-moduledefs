@@ -8,7 +8,7 @@ import mill.api.*
 import mill.*
 
 object Settings {
-  val version = "0.12.5"
+  val version = "0.12.7"
   val pomOrg = "com.lihaoyi"
   val githubOrg = "com-lihaoyi"
   val githubRepo = "mill-moduledefs"
