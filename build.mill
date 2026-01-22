@@ -8,7 +8,7 @@ import mill.api.*
 import mill.*
 
 object Settings {
-  val version = "0.13.0"
+  val version = "0.13.1"
   val pomOrg = "com.lihaoyi"
   val githubOrg = "com-lihaoyi"
   val githubRepo = "mill-moduledefs"
@@ -35,7 +35,7 @@ object Deps {
     ).distinct
 
   val scala3Versions = (
-    Seq("3.7.0", "3.7.1", "3.7.2", "3.7.3", "3.7.4", "3.8.0-RC1", "3.8.0-RC2", "3.8.0-RC3", "3.8.0-RC4", "3.8.0-RC5", "3.8.0") ++
+    Seq("3.7.0", "3.7.1", "3.7.2", "3.7.3", "3.7.4", "3.8.0-RC1", "3.8.0-RC2", "3.8.0-RC3", "3.8.0-RC4", "3.8.0-RC5", "3.8.0", "3.8.1") ++
       Seq(libScala3Version) ++
       scalaVersionEnv.filter(_.startsWith("3"))
     ).distinct
