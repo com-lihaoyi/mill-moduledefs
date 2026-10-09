@@ -88,8 +88,13 @@ class AutoOverridePluginDotty extends StandardPlugin {
   /** This phase automatically adds the override annotation to methods that require one. */
   private class AutoOverride extends PluginPhase {
 
+    // Run before pickler, so that the Override flag we add ends up in TASTy. Classes loaded
+    // from TASTy rather than compiled from source (by incremental compilation, say) would
+    // lack it otherwise, and refchecks would reject classes mixing two of them that override
+    // the same member ("inherits conflicting members"). Scala 3 inserts plugin phases right
+    // before their first runsBefore phase.
     override val runsAfter = Set("posttyper")
-    override val runsBefore = Set("crossVersionChecks") // this is where override checking happens
+    override val runsBefore = Set("pickler")
 
     val phaseName = "auto-override"
 
