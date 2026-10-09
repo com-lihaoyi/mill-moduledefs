@@ -90,8 +90,32 @@ This project is published under the https://mit-license.org/[MIT License].
 === 0.14.0 - 2026-10-09
 
 * Run auto-override phase before pickling
+* Add support for Scala 3.10.0
 
+[#0-13-3]
+=== 0.13.4
 
+* Add support for Scala 3.9.0
+
+[#0-13-2]
+=== 0.13.2
+
+* Add support for Scala 3.8.4
+
+[#0-13-1]
+=== 0.13.1
+
+* Add support for Scala 3.8.1
+
+[#0-13-0]
+=== 0.13.0
+
+* Add support for Scala 3.8.0
+
+[#0-12-8]
+=== 0.12.8
+
+* Add support for Scala 3.8.0-RC5
 
 
 [#0-12-5-RC1]
