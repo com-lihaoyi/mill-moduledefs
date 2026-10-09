@@ -1,11 +1,14 @@
-//| mill-version: 1.1.0-RC2
-//| mill-jvm-version: 11
+//| mill-version: 1.1.10
+//| mill-jvm-version: zulu:17.0.14
 package build
 
-import mill.scalalib._
-import mill.scalalib.publish._
+import mill.scalalib.*
+import mill.scalalib.publish.*
 import mill.api.*
 import mill.*
+import mill.util.Version
+
+given Ordering[Version] = Version.MavenOrdering
 
 object Settings {
   val version = "0.14.0"
@@ -16,7 +19,6 @@ object Settings {
 }
 
 object Deps {
-
   // 2.13.18 is latest forward-compatible 2.13 version
   val libScala2Version = "2.13.18"
   // 3.7.4 is forward-compatible to 3.7, which is our lowest supported 3 version
@@ -25,18 +27,24 @@ object Deps {
   val scalaVersionEnv = sys.env.get("SCALA_VERSION")
     .map(_.trim)
     .filter(_.nonEmpty)
-    .tapEach(v => println(s"Adding environmental defined Scala version to version matrix. SCALA_VERSION=${v}"))
+    .tapEach(v =>
+      println(s"Adding environmental defined Scala version to version matrix. SCALA_VERSION=${v}")
+    )
     .toSeq
 
   val scala2Versions = (
     0.to(17).map(v => "2.13." + v) ++
       Seq(libScala2Version) ++
       scalaVersionEnv.filter(_.startsWith("2.13"))
-    ).distinct
+  ).distinct
 
   val scala3Versions = (
     Seq(
-      "3.7.0", "3.7.1", "3.7.2", "3.7.3", "3.7.4",
+      "3.7.0",
+      "3.7.1",
+      "3.7.2",
+      "3.7.3",
+      "3.7.4",
       "3.8.0",
       "3.8.1",
       "3.8.4",
@@ -45,18 +53,21 @@ object Deps {
     ) ++
       Seq(libScala3Version) ++
       scalaVersionEnv.filter(_.startsWith("3"))
-    ).distinct
+  ).distinct
 
   val libScalaVersions = Seq(libScala2Version, libScala3Version)
-  val pluginScalaVersions: Map[String, String] =    (
+  val pluginScalaVersions: Map[String, String] = (
     scala2Versions.map(_ -> libScala2Version) ++
       scala3Versions.map(_ -> libScala3Version)
-    ).toMap
+  ).toMap
 
   def scalaCompiler(scalaVersion: String) =
-    if (scalaVersion.startsWith("3.")) ivy"org.scala-lang::scala3-compiler:${scalaVersion}"
-    else ivy"org.scala-lang:scala-compiler:${scalaVersion}"
-  val sourcecode = ivy"com.lihaoyi::sourcecode:0.3.0"
+    if (Version.isAtLeast(scalaVersion, "3")) {
+      mvn"org.scala-lang::scala3-compiler:${scalaVersion}"
+    } else {
+      mvn"org.scala-lang:scala-compiler:${scalaVersion}"
+    }
+  val sourcecode = mvn"com.lihaoyi::sourcecode:0.3.0"
 }
 
 trait ModuledefsBase extends ScalaModule with PublishModule {
@@ -72,18 +83,22 @@ trait ModuledefsBase extends ScalaModule with PublishModule {
       Developer("lefou", "Tobias Roeser", "https://github.com/lefou")
     )
   )
-  def jvmId = Task{ if (scalaVersion().startsWith("3.8.") || scalaVersion().startsWith("3.9.")) "17" else "11" }
-  override def javacOptions = Seq("-source", "1.8", "-target", "1.8", "-encoding", "UTF-8")
+  def jvmVersion = Task {
+    if (Version.isAtLeast(scalaVersion(), "3.8.0")) "17"
+    else "11"
+  }
+  override def javacOptions = Seq("-source", "11", "-target", "11", "-encoding", "UTF-8")
   override def scalacOptions = Task {
-    super.scalacOptions() ++ (
-      if (scalaVersion().startsWith("3.")) Seq("-Yexplicit-nulls", "-no-indent")
-      else Seq.empty
-    )
+    super.scalacOptions() ++ {
+      if (Version.isAtLeast(scalaVersion(), "3"))
+        Seq("-Yexplicit-nulls", "-no-indent")
+      else Seq()
+    }
   }
 }
 
 object moduledefs extends Cross[ModuleDefsCross](Deps.libScalaVersions)
-trait ModuleDefsCross extends CrossScalaModule  with ModuledefsBase {
+trait ModuleDefsCross extends CrossScalaModule with ModuledefsBase {
   outer =>
   override def artifactName = "mill-" + super.artifactName()
 
@@ -106,7 +121,7 @@ trait PluginCross extends CrossScalaModule with ModuledefsBase {
   )
 
   def versionedResources = Task.Sources(
-    scalaVersionDirectoryNames.map(dir => moduleDir / s"resources-$dir")*
+    scalaVersionDirectoryNames.map(dir => moduleDir / s"resources-$dir") *
   )
   override def resources = Task {
     super.resources() ++ versionedResources()
